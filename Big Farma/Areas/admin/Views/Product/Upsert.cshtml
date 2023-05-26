@@ -1,0 +1,115 @@
+﻿@model Big_Farma.ViewModel.ProductVm
+
+@{
+    ViewData["Title"] = "Upsert";
+}
+
+<form method="post" asp-action="Upsert" enctype="multipart/form-data">
+
+    <div class="row">
+        <div class="col-10">
+            <div class="border p-3 mt-4 row">
+                <div class="row pb-2">
+                    <h2 class="text-primary">
+                        @(Model.product.ID == 0 ? "Create" : "Update") Product
+                    </h2>
+                    <hr />
+                </div>
+                <div class="mb-3">
+
+                    <input asp-for="product.ID" hidden />
+                    <input asp-for="product.ImageUrl" hidden />
+                    <input asp-for="product.User" hidden />
+                
+                </div>
+                <div class="mb-3">
+                    <label asp-for="product.ProductName">
+                    </label>
+                    <input asp-for="product.ProductName" class="form-control" />
+                    <span asp-validation-for="product.ProductName" class="text-bg-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="product.ProductDescription">
+                    </label>
+                    <textarea asp-for="product.ProductDescription" rows="3" class="form-control"></textarea>
+                    <span asp-validation-for="product.ProductDescription" class="text-bg-danger"></span>
+                </div>
+                <div class="mb-3  col-6 ">
+                    <label asp-for="product.Price">
+                    </label>
+                    <input asp-for="product.Price" class="form-control" />
+                    <span asp-validation-for="product.Price" class=" text-bg-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="product.ImageUrl"></label>
+                    <input type="file" id="uploadBox" name="file" class="form-control" />
+                </div>
+                <div class="mb-3 col-6">
+                    <label asp-for="product.CategoryId">
+                    </label>
+                    <select asp-for="product.CategoryId" asp-items="@Model.CategoryLists" class="form-select">
+                        <option disabled selected>--category list--</option>
+                    </select>
+
+                </div>
+               
+                @if (Model.product.ID != 0)
+                {
+                    <button type="submit" class="btn btn-primary" style="width:150px">Update</button>
+                }
+                else
+                {
+                    <button type="submit" onclick="return ValidateInput()" class="btn btn-primary" style="width:150px">Create</button>
+                }
+                <a asp-controller="Product" asp-action="Index" class="btn btn-secondary" style="width:150px">
+                    Back to List
+                </a>
+            </div>
+        </div>
+
+    <div class="col-2">
+        <img src="@Model.product.ImageUrl"
+        width="100%" style="border-radius:5px; border:1px solid #bbb9b9"/>
+        </div>
+    </div>
+</form>
+
+@section Scripts{
+    @{
+        <partial name="_ValidationScriptsPartial" />
+        //client side validations
+    }
+    <script>
+        tinymce.init({
+            selector: 'textarea',
+            plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed linkchecker a11ychecker tinymcespellchecker permanentpen powerpaste advtable advcode editimage tinycomments tableofcontents footnotes mergetags autocorrect typography inlinecss',
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+            tinycomments_mode: 'embedded',
+            tinycomments_author: 'Author name',
+            mergetags_list: [
+                { value: 'First.Name', title: 'First Name' },
+                { value: 'Email', title: 'Email' },
+            ]
+        });
+    </script>
+    <script>
+        //tinymce.init({
+        //    selector: 'textarea',
+        //    plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak',
+        //    toolbar_mode: 'floating',
+        //});
+
+        function ValidateInput() {
+            if (document.getElementById("uploadBox").value == "") {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please upload an Image!',
+                });
+                return false;
+            }
+            return true;
+        }
+    </script>
+
+}
