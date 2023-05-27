@@ -8,10 +8,10 @@ namespace Big_Farma.ViewModel
     {
         public Product product { get; set; }
 
+
         [ValidateNever]
         public IEnumerable<SelectListItem> CategoryLists { get; set; }
 
-        [ValidateNever]
-        public IEnumerable<SelectListItem> CoverTypeLists { get; set; }
+
     }
 }

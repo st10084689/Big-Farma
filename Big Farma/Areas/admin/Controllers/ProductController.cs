@@ -6,12 +6,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Hosting;
 using System.Data;
+using System.Security.Claims;
 
 namespace Big_Farma.Areas.admin.Controllers
 {
+    
     [Area("admin")]
     public class ProductController : Controller
-    { 
+    {
+        public CustomerStockVm CustomerStock { get; set; }
 
           private readonly IUnitOfWork _unitOfWork;
           private readonly IWebHostEnvironment _HostEnvironment;
@@ -21,15 +24,32 @@ namespace Big_Farma.Areas.admin.Controllers
         _unitOfWork = unitOfWork;
         _HostEnvironment = HostEnviroment;
     }
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         public IActionResult Index()
-    {
-        return View();
+    {       var claimIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            //if (User.IsInRole("Admin")){
+            //    CustomerStock = new CustomerStockVm()
+            //    {
+            //        ListProducts = _unitOfWork.product.GetAll()
+            //    };
+            //}
+            //else
+            //{
+                CustomerStock = new CustomerStockVm()
+                {
+                    ListProducts = _unitOfWork.product.GetAll(u => u.ApplicationIdentity == claim.Value)
+                };
+
+            
+          
+            return View(CustomerStock);
+            
     }
 
         //get
         [Authorize(Roles = "Customer"+","+"Admin")]
-        public IActionResult Upsert(int? id, string? userName)
+        public IActionResult Upsert(int? id)
     {
         ProductVm productVm = new()
         {
@@ -71,10 +91,16 @@ namespace Big_Farma.Areas.admin.Controllers
     [ValidateAntiForgeryToken]
     public IActionResult Upsert(ProductVm obj, IFormFile? file)
     {
+            var claimIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            obj.product.ApplicationIdentity = claim.Value;
 
-        if (ModelState.IsValid)
+            if (ModelState.IsValid)
         {
-            string wwwRootPath = _HostEnvironment.WebRootPath;
+               
+
+
+                string wwwRootPath = _HostEnvironment.WebRootPath;
             if (file != null)
             {
                 string fileName = Guid.NewGuid().ToString();
@@ -100,7 +126,7 @@ namespace Big_Farma.Areas.admin.Controllers
 
             if (obj.product.ID == 0)
             {
-                    obj.product.User = ApplicationUser.Name
+              
                 _unitOfWork.product.Add(obj.product);
             }
             else
@@ -116,14 +142,41 @@ namespace Big_Farma.Areas.admin.Controllers
         return View(obj);
     }
 
+        //public IActionResult GetUserTables()
+        //{
+        //    var claimIdentity = (ClaimsIdentity)User.Identity;
+        //    var claim = claimIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
+        //    CustomerStock = new CustomerStockVm()
+        //    {
+        //        ListProducts = _unitOfWork.product.GetAll(u => u.ApplicationIdentity == claim.Value)
+        //    };
+        //    return View(CustomerStock);
+        //}
+
 
 
     #region API CALLS
     [HttpGet]
     public IActionResult GetAll()
     {
-        var productList = _unitOfWork.product.GetAll(includeProperties: "category");
-        return Json(new { data = productList });
+            var claimIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            if (User.IsInRole("Admin"))
+            {
+
+                var ListProducts = _unitOfWork.product.GetAll(includeProperties: "category");
+                return Json(new { data = ListProducts });
+            }
+
+            else
+            {
+                var ListProducts = _unitOfWork.product.GetAll(u => u.ApplicationIdentity == claim.Value, includeProperties: "category");
+                return Json(new { data = ListProducts });
+
+            }
+          return RedirectToAction("Index");
+        
     }
     [HttpDelete]
     public IActionResult Delete(int? id)

@@ -22,7 +22,7 @@ namespace Big_Farma.Repository
                 objFromDb.ProductDescription = obj.ProductDescription;
                 objFromDb.Price = obj.Price;
                 objFromDb.CategoryId = obj.CategoryId;
-                objFromDb.users = obj.users;
+                objFromDb.ApplicationIdentity = obj.ApplicationIdentity;
                 if (obj.ImageUrl != null)
                 {
                     objFromDb.ImageUrl = obj.ImageUrl;

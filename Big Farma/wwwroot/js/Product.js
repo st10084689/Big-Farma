@@ -1,7 +1,9 @@
-﻿var dataTable;
+﻿
+
+var dataTable;
 
 $(document).ready(function () {
-    loadDataTable();
+
 });
 
 function loadDataTable() {
@@ -13,6 +15,7 @@ function loadDataTable() {
             { "data": "productName", "width": "15%" },
             { "data": "price", "width": "15%" },
             { "data": "category.categoryName", "width": "15%" },
+            { "data": "productDecription", "width": "15%" },
             {
                 "data": "id",
                 "render": function (data) {
@@ -26,6 +29,7 @@ function loadDataTable() {
                 },
                 "width": "15%"
             },
+
 
         ]
     });

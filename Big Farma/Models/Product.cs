@@ -13,7 +13,9 @@ namespace Big_Farma.Models
 
         public string ProductDescription { get; set; }
 
-        public int Price{ get; set; }
+        public int Price { get; set; }
+
+        public DateTime DateTime { get; set; } = DateTime.Now;
 
         public int MyProperty { get; set; }
 
@@ -26,11 +28,11 @@ namespace Big_Farma.Models
         [Required]
         public int CategoryId { get; set; }
 
-        [ForeignKey("users")]
+        [ForeignKey("ApplicationIdentity")]
         [ValidateNever]
-        public ApplicationUser User { get; set; }
-        [Required]
-        public string users { get; set; }
+        public ApplicationUser applicationUser { get; set; }
+        [ValidateNever]
+        public string ApplicationIdentity { get; set; }
 
 
     }

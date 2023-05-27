@@ -42,6 +42,12 @@
                                 </div>
                             </li>
                         }
+                        @if (User.IsInRole("Customer"))
+                        {
+                            <li class="nav-item ">
+                                    <a class="dropdown-item" asp-area="admin" asp-controller="Product" asp-action="Index">Product</a>
+                            </li>
+                        }
 
                        <partial name="_loginPartial" />
                     </ul>
